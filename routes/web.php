@@ -26,13 +26,13 @@ Auth::routes();
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::middleware(['auth', 'verified'])->group(function () {
     // Department Controller Routes
-    Route::get('/departments', [DepartmentController::class, 'index'])->name('departments');
-    Route::get('/add/department', [DepartmentController::class, 'create'])->name('department.add');
-    Route::post('/department', [DepartmentController::class, 'store'])->name('department.save');
-    Route::get('/department/{department:name}',[DepartmentController::class,'show'])->name('department.detail');
-    Route::get('/department/{department:name}/edit',[DepartmentController::class, 'edit'])->name('department.edit');
-    Route::put('/department/{department}',[DepartmentController::class, 'update'])->name('department.update');
-    Route::delete('/department/{department}',[DepartmentController::class,'destroy'])->name('department.remove');
+    // Route::get('/departments', [DepartmentController::class, 'index'])->name('departments');
+    // Route::get('/add/department', [DepartmentController::class, 'create'])->name('department.add');
+    // Route::post('/department', [DepartmentController::class, 'store'])->name('department.save');
+    // Route::get('/department/{department:name}',[DepartmentController::class,'show'])->name('department.detail');
+    // Route::get('/department/{department:name}/edit',[DepartmentController::class, 'edit'])->name('department.edit');
+    // Route::put('/department/{department}',[DepartmentController::class, 'update'])->name('department.update');
+    // Route::delete('/department/{department}',[DepartmentController::class,'destroy'])->name('department.remove');
     // Doctor Controller Routes
     Route::get('/doctors',[DoctorController::class,'index'])->name('doctors');
     Route::get('/add/doctor',[DoctorController::class,'create'])->name('doctor.add');

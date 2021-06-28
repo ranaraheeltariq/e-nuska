@@ -1,0 +1,34 @@
+Admin : 
+*Lead (CRUD), done
+*Order (CRUD), done
+*User (CRUD), 
+*UserLogs(View),
+*Department (CRUD)
+
+Riders : 
+*Orders all (All Status Order that assigned to him- Update Status:Shipped or Cancelled),
+*Profile: (Password,name, number)
+
+Call Center: 
+*Lead(Lead View (done), Update Status: Cancel or Create Order), 
+*Orders(View All Status (done), Create Order. Update:only cancel in being process, beingprocess status can be edit, Assign Rdier),
+*Profile (password, name, number)
+
+Pharmacy: 
+*Lead(Create, View, Edit, Update All Status,), (done)
+*Order(View All status (done),Create Order, Price & Invoice file Update, Edit,),
+*Profile (password, name, number)
+
+Doctors : 
+Lead (Create lead with customer details and prescription file),
+*Profile: (Password, name, number)
+
+################################################## Fellow ##########################################
+
+Pharamcy Create Lead,
+
+Call Center Confirmation or Remarks, Create Or Lead Clease, After Create Order Assign Rider
+
+Rider Mark Deliver or Updload Invoice
+
+Pharmcy: Review Invoice input Amount

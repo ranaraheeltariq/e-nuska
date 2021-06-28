@@ -22,7 +22,7 @@
                             @foreach($logs as $log)
                             <tr>
                               <td>{{$log->user->name}}</td>
-                              <td>{{ $log->description }}</td>
+                              <td style="white-space: normal;line-height: normal;">{{ $log->description }}</td>
                               <td>{{$log->created_at}}</td>
                             </tr>
                             @endforeach

@@ -217,7 +217,7 @@ class OrderController extends Controller
         if(!in_array(Auth::user()->department->name, array('Pharmacy','Admin','Call Center')) || ($order->status_id != 4 && !in_array(Auth::user()->department->name, array('Pharmacy','Admin'))) ){
             return redirect('/')->with('Message','You Are Not Allowed There');
         }
-        return "Edit Order => ".$order;
+        return view('order/edit_order')->with('order',$order);
     }
 
     /**
@@ -229,108 +229,111 @@ class OrderController extends Controller
      */
     public function update(Request $request, Order $order)
     {
-         switch ($request->status_id) {
-            case '4':
-                if($order->user_id == null && isset($request->user_id)){
-                    $order->update([
-                        'user_id' => $request->user_id,
-                    ]);
+        if(!$request->filled('alledit') && $request->status_id == 4 && $order->user_id == null && isset($request->user_id))
+        {
+            $order->update([
+                'user_id' => $request->user_id,
+            ]);
 
-                    $log = ([
-                    'user_id' => Auth::user()->id,
-                    'description' => 'Rider Assigned by '.Auth::user()->name.'. Order Id '.$order->id.'; Rider assigned: '.$order->user->name,
-                    ]);
-                }
-                break;
-            case '5':
-                if($order->user_id == null)
-                    return back()->with('Message','Assign Rider Before Mark Completed');
-                $log = ([
-                    'user_id' => Auth::user()->id,
-                    'description' => 'Order Mark as Shipped by '.Auth::user()->name.'. Order Id '.$order->id.'; Order Old Status: '.$order->status->status,
-                    ]);
-                $order->update($request->all());
-                break;
-            case '6':
-                $log = ([
-                    'user_id' => Auth::user()->id,
-                    'description' => 'Order Mark as Cancelled by '.Auth::user()->name.'. Order Id '.$order->id.'; Order Old Status: '.$order->status->status,
-                    ]);
-                $order->update($request->all());
-                break;
-            case '7':
-                $log = ([
-                    'user_id' => Auth::user()->id,
-                    'description' => 'Order Mark as Refund by '.Auth::user()->name.'. Order Id '.$order->id.'; Old Status: '.$order->status->status,
-                    ]);
-                $order->update($request->all());
-                break;
-            case '8':
-                $log = ([
-                    'user_id' => Auth::user()->id,
-                    'description' => 'Order Mark as Completed and Upload Invoice by '.Auth::user()->name.'. Order Id '.$order->id.'; Order Old Status: '.$order->status->status.'; Total Invoice Without Discount: '.$request->invoice_without_discount.'; Total Invoice With Discount: '.$request->invoice_with_discount,
-                    ]);
-                if($request->has('invoice_file')){
-                    $file = $request->file('invoice_file');
-                    $image = $file->getClientOriginalName();
-                    $file->move(public_path('images/invoice'), $image);
-                }
-                $data = ([
-                    'invoice_with_discount' => $request->invoice_with_discount,
-                    'invoice_without_discount' => $request->invoice_without_discount,
-                    'invoice_file' => $image,
-                    'status_id' => $request->status_id,
+            $log = ([
+                'user_id' => Auth::user()->id,
+                'description' => 'Rider Assigned by '.Auth::user()->name.'. Order Id '.$order->id.'; Rider assigned: '.$order->user->name,
+            ]);
 
+        }
+        else if(!$request->filled('alledit') && $request->status_id == 5)
+        {
+            if($order->user_id == null)
+                return back()->with('Message','Assign Rider Before Mark Completed');
+            $log = ([
+                'user_id' => Auth::user()->id,
+                'description' => 'Order Mark as Shipped by '.Auth::user()->name.'. Order Id '.$order->id.'; Order Old Status: '.$order->status->status,
+            ]);
+            $order->update($request->all());
+        }
+        else if($request->status_id === 6 && !isset($request->alledit))
+        {
+            $log = ([
+                'user_id' => Auth::user()->id,
+                'description' => 'Order Mark as Cancelled by '.Auth::user()->name.'. Order Id '.$order->id.'; Order Old Status: '.$order->status->status,
+            ]);
+            $order->update($request->all());
+        }
+        else if($request->status_id === 7 && !isset($request->alledit))
+        {
+            $log = ([
+                'user_id' => Auth::user()->id,
+                'description' => 'Order Mark as Refund by '.Auth::user()->name.'. Order Id '.$order->id.'; Old Status: '.$order->status->status,
+            ]);
+            $order->update($request->all());
+        }
+        else if($request->status_id === 8 && !isset($request->alledit))
+        {
+            $log = ([
+                'user_id' => Auth::user()->id,
+                'description' => 'Order Mark as Completed and Upload Invoice by '.Auth::user()->name.'. Order Id '.$order->id.'; Order Old Status: '.$order->status->status.'; Total Invoice Without Discount: '.$request->invoice_without_discount.'; Total Invoice With Discount: '.$request->invoice_with_discount,
+            ]);
+            if($request->has('invoice_file')){
+                $file = $request->file('invoice_file');
+                $image = $file->getClientOriginalName();
+                $file->move(public_path('images/invoice'), $image);
+            }
+            $data = ([
+                'invoice_with_discount' => $request->invoice_with_discount,
+                'invoice_without_discount' => $request->invoice_without_discount,
+                'invoice_file' => $image,
+                'status_id' => $request->status_id,
+            ]);
+            $order->update($data);
+        } 
+        else
+        {
+            $request->validate([
+                'customer_name' => 'required|string|max:191',
+                'number' => 'required|string|max:191',
+                'address' => 'required|string|max:1000',
+                'doctor' => 'required|integer',
+                'status' => 'required|integer',
+                'rider' => 'nullable|integer',
+                'invoice_with_discount' => 'nullable|string',
+                'invoice_without_discount' => 'nullable|string',
+                'medicine_name' => 'required|array|min:1',
+                'medicine_name.*' => 'required|string|max:191',
+                'quantity' => 'required|array|min:1',
+                'quantity.*' => 'required|integer',
+            ]);
+            $image = $order->invoice_file;
+            if($request->has('invoice_file')){
+                $file = $request->file('invoice_file');
+                $image = $file->getClientOriginalName();
+                $file->move(public_path('images/invoice'), $image);
+            }
+            $log = ([
+                'user_id' => Auth::user()->id,
+                'description' => 'Order Updated by '.Auth::user()->name.'. Order Id '.$order->id.'; Old Order Data '.json_encode($order).' New Order Data '.json_encode($request->all()),
+            ]);
+            $data = ([
+                'customer_name' => $request->customer_name,
+                'customer_number' => $request->number,
+                'customer_address' => $request->address,
+                'doctor_id' => $request->doctor,
+                'status_id' => $request->status,
+                'user_id'   => $request->rider,
+                'invoice_with_discount' => $request->invoice_with_discount,
+                'invoice_without_discount' => $request->invoice_without_discount,
+                'invoice_file' => $image,
+            ]);
+            $order->update($data);
+            $medicine_name = $request->medicine_name;
+            $quantity = $request->quantity;
+            $order->orderproducts()->forceDelete();
+            foreach ($quantity as $key => $value) 
+            {
+                $order->orderproducts()->create([
+                    'medicine_name' => $request->medicine_name[$key],
+                    'quantity' => $request->quantity[$key],
                 ]);
-                $order->update($data);
-                break;
-            default:
-                $request->validate([
-                    'customer_name' => 'required|string|max:191',
-                    'customer_number' => 'required|string|max:191',
-                    'customer_address' => 'required|string|max:1000',
-                    'doctor_id' => 'required|integer',
-                    'status_id' => 'required|integer',
-                    'user_id' => 'nullable|integer',
-                    'invoice_with_discount' => 'nullable|string',
-                    'invoice_without_discount' => 'nullable|string',
-                    'medicine_name' => 'required|array|min:1',
-                    'medicine_name.*' => 'required|string|max:191',
-                    'quantity' => 'required|array|min:1',
-                    'quantity.*' => 'required|integer',
-                ]);
-                if($request->has('invoice_file')){
-                    $file = $request->file('invoice_file');
-                    $image = $file->getClientOriginalName();
-                    $file->move(public_path('images/invoice'), $image);
-                }
-                $log = ([
-                    'user_id' => Auth::user()->id,
-                    'description' => 'Order Updated by '.Auth::user()->name.'. Order Id '.$order->id.'; Old Order Data '.var_dump($order).' New Order Data '.var_dump($request->all()),
-                ]);
-                $data = ([
-                    'customer_name' => $request->customer_name,
-                    'customer_number' => $request->customer_number,
-                    'customer_address' => $request->customer_address,
-                    'doctor_id' => $request->doctor_id,
-                    'status_id' => $request->status_id,
-                    'user_id'   => $request->user_id,
-                    'invoice_with_discount' => $request->invoice_with_discount,
-                    'invoice_without_discount' => $request->invoice_without_discount,
-                    'invoice_file' => $image,
-                ]);
-                $order->update($request->all());
-                $order->orderproducts()->sync([$request->medicine_name, $request->quantity]);
-                // $medicine_name = $request->medicine_name;
-                // $quantity = $request->quantity;
-                // foreach ($quantity as $key => $value) {
-                //     $products = new OrderProduct;
-                //         $products->medicine_name = $medicine_name[$key];
-                //         $products->quantity = $quantity[$key];
-                //         $products->order_id = $order->id;
-                //         $products->save();
-                // }
-                break;
+            }
 
         }
         \Userlog::store($log);

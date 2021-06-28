@@ -23,8 +23,8 @@
     doctor.doctor_name != null ? modal.find('#dname').text(doctor.doctor_name) : modal.find('.dname').hide()
     doctor.doctor_number != null ? modal.find('#dnumber').text(doctor.doctor_number) : modal.find('.dnumber').hide()
     doctor.doctor_clinic != null ? modal.find('#dclinic').text(doctor.doctor_clinic) : modal.find('.dclinic').hide()
-    lead.file1 != null ? modal.find('#file1').html('<img width=100px height=100px src="/images/prescription/'+lead.file1+'" />') : modal.find('.file1').hide()
-    lead.file2 != null ? modal.find('#file2').html('<img width=100px height=100px src="/images/prescription/'+lead.file2+'" />') : modal.find('.file2').hide()
+    lead.file1 != null ? modal.find('#file1').html('<a href="/images/prescription/'+lead.file1+'" target="_blank"><img width=100px height=100px src="/images/prescription/'+lead.file1+'" /></a>') : modal.find('.file1').hide()
+    lead.file2 != null ? modal.find('#file2').html('<a href="/images/prescription/'+lead.file2+'" target="_blank"><img width=100px height=100px src="/images/prescription/'+lead.file2+'" /></a>') : modal.find('.file2').hide()
     $('.products').html('')
     $.each(products, function(key1, value){
       // console.log('Key => '+key1+', Value => '+value.medicine_name)
@@ -33,7 +33,7 @@
     var i = 1;
      $('.remarks').html('')
       $.each(remarks, function(key1, value){
-      $('.remarks').prepend('<p class="clearfix remark"><span class="float-left"> Remarks '+ i +' </span><span class="float-right text-muted">'+value.description+'</span></p>');
+      $('.remarks').prepend('<p class="clearfix remark"><span class="float-left"> Remarks '+ i +' </span><span>&nbsp;('+ formatDate(value.created_at)+')</span><span class="float-right text-muted">'+value.description+'</span></p>');
        i += 1;
       });
 
@@ -54,8 +54,9 @@
     modal.find('.dname').show()
     modal.find('.dnumber').show()
     modal.find('.dclinic').show()
+    modal.find('.invwod').show()
+    modal.find('.invwd').show()
     modal.find('.file1').show()
-    modal.find('.file2').show()
     modal.find('.modal-title').text('Detail of Order Id: ' + recipient)
     order.customer_name != null ? modal.find('#cname').text(order.customer_name) : modal.find('.cname').hide()
     order.customer_number != null ? modal.find('#number').text(order.customer_number) : modal.find('.number').hide()
@@ -63,8 +64,9 @@
     doctor.doctor_name != null ? modal.find('#dname').text(doctor.doctor_name) : modal.find('.dname').hide()
     doctor.doctor_number != null ? modal.find('#dnumber').text(doctor.doctor_number) : modal.find('.dnumber').hide()
     doctor.doctor_clinic != null ? modal.find('#dclinic').text(doctor.doctor_clinic) : modal.find('.dclinic').hide()
-    lead.file1 != null ? modal.find('#file1').html('<img width=100px height=100px src="/images/prescription/'+lead.file1+'" />') : modal.find('.file1').hide()
-    lead.file2 != null ? modal.find('#file2').html('<img width=100px height=100px src="/images/prescription/'+lead.file2+'" />') : modal.find('.file2').hide()
+    order.invoice_without_discount != null ? modal.find('#invwod').text(order.invoice_without_discount) : modal.find('.invwod').hide()
+    order.invoice_with_discount != null ? modal.find('#invwd').text(order.invoice_with_discount) : modal.find('.invwd').hide()
+    order.invoice_file != null ? modal.find('#file1').html('<a href="/images/invoice/'+order.invoice_file+'" target="_blank">Open Invoice</a>') : modal.find('.file1').hide()
     $('.products').html('')
     $.each(products, function(key1, value){
       // console.log('Key => '+key1+', Value => '+value.medicine_name)
@@ -114,4 +116,21 @@
     modal.find('.modal-title').text('Upload Invoice to Order No: ' + recipient)
     modal.find('.modal-body form').attr('action',link)
   })
+  function formatDate(date) {
+     var d = new Date(date),
+         month = '' + (d.getMonth() + 1),
+         day = '' + d.getDate(),
+         year = d.getFullYear();
+         var hours = d.getHours();
+         var mint = d.getMinutes();
+         var sec = d.getSeconds();
+         
+
+     if (month.length < 2) month = '0' + month;
+     if (day.length < 2) day = '0' + day;
+     var da = [year, month, day].join('-');
+     var ta = [hours,mint,sec].join(':');
+     return [da,ta].join(' ');
+  }
+
 })(jQuery);

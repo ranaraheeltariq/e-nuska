@@ -157,8 +157,16 @@
                                           <span class="float-left"> Doctor Clinic </span>
                                           <span class="float-right text-muted" id="dclinic"></span>
                                         </p>
+                                        <p class="clearfix invwod">
+                                          <span class="float-left"> Invoice Without Discount </span>
+                                          <span class="float-right text-muted" id="invwod"></span>
+                                        </p>
+                                        <p class="clearfix invwd">
+                                          <span class="float-left"> Invoice With Discount </span>
+                                          <span class="float-right text-muted" id="invwd"></span>
+                                        </p>
                                         <p class="clearfix file1">
-                                          <span class="float-left"> Prescription </span>
+                                          <span class="float-left"> Invoice </span>
                                           <span class="float-left"></span>
                                         </p>
                                         <p class="clearfix file">
@@ -223,7 +231,7 @@
                       </div>
                     </div>
                     {{-- Assign Rider Modal End --}}
-                    {{-- Assign Rider Modal Start --}}
+                    {{-- Invoice Upload Modal Start --}}
               <div class="modal fade" id="uploadinvoice" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
                       <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -265,4 +273,4 @@
                         </div>
                       </div>
                     </div>
-                    {{-- Assign Rider Modal End --}}
+                    {{-- Invoice Upload Modal End --}}

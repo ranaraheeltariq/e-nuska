@@ -91,7 +91,7 @@
               </ul>
             </div>
           </li>
-          <!-- <li class="nav-item">
+          {{-- <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#department" aria-expanded="false" aria-controls="department">
               <i class="mdi mdi-account-network menu-icon"></i>
               <span class="menu-title">Department</span>
@@ -103,7 +103,7 @@
                 <li class="nav-item"> <a class="nav-link" href="{{ route('departments') }}">Departments</a></li>
               </ul>
             </div>
-          </li> -->
+          </li> --}}
           <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#user" aria-expanded="false" aria-controls="user">
               <i class="mdi mdi-account menu-icon"></i>

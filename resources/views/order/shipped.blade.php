@@ -19,7 +19,7 @@
                               <th>Products Detail</th>
                               <th>Rider Detail</th>
                               <th>Shipped On</th>
-                              @if(in_array(Auth::user()->department->name, array('Pharmacy','Admin') ))
+                              @if(in_array(Auth::user()->department->name, array('Pharmacy','Admin','Riders') ))
                               <th>Actions</th>
                               @endif
                             </tr>
@@ -33,18 +33,20 @@
                               <td style="white-space: normal;line-height: normal;">@foreach($order->orderproducts as $product) <b>Medi:</b> {{$product->medicine_name}} <b>/ Qty:</b>  {{$product->quantity}}<br>@endforeach</td>
                               <td>{{ $order->user->name }}<br><br>{{ $order->user->mobile }} </td>
                               <td>{{ $order->updated_at }}</td>
-                              @if(in_array(Auth::user()->department->name, array('Pharmacy','Admin') ))
+                              @if(in_array(Auth::user()->department->name, array('Pharmacy','Admin','Riders') ))
                               <td class="text-right">
-                                <a href="{{ route('orders.edit',$order->id) }}" class="btn btn-light"><i class="mdi mdi-pencil text-success"></i>Edit Order </a>
-                                <br><br>
                                 <button class="btn btn-light uploadinvoice" data-toggle="modal" data-target="#uploadinvoice" data-whatever="{{$order->id}}" data-link="{{ route('orders.update',$order->id) }}"><i class="mdi mdi-briefcase-upload text-primary"></i> Upload Invoice </button>
+                                <br><br>
+                                @if(in_array(Auth::user()->department->name, array('Pharmacy','Admin') ))
+                                <a href="{{ route('orders.edit',$order->id) }}" class="btn btn-light"><i class="mdi mdi-pencil text-success"></i>Edit Order </a>
                                 <br><br>
                                 <form id="refund" action="{{ route('orders.update',$order->id) }}" method="post">
                                   {{ csrf_field() }}
                                   {{ method_field('PUT') }}
                                   <input type="hidden" name="status_id" value="7">
-                                  <button type="submit" name="submit" class="btn btn-light"><i class="mdi mdi-check text-danger"></i> Order Refunded </button>   
+                                  <button type="submit" name="submit" class="btn btn-light"><i class="mdi mdi-check text-danger"></i> Order Refunded </button>
                                 </form>
+                                @endif
                               </td>
                               @endif
                             </tr>

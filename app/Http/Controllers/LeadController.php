@@ -199,7 +199,7 @@ class LeadController extends Controller
         if(!in_array(Auth::user()->department->name, array('Pharmacy','Admin') )){
             return redirect('/')->with('Message','You Are Not Allowed There');
         }
-        return "Edit Lead => ".$lead;
+        return view('lead/edit_lead')->with('lead',$lead);
     }
 
     /**
@@ -211,61 +211,70 @@ class LeadController extends Controller
      */
     public function update(Request $request, Lead $lead)
     {
-        switch ($request->status_id) {
-            case '3':
-                $log = ([
-                    'user_id' => Auth::user()->id,
-                    'description' => 'Lead Updated by '.Auth::user()->name.'. Lead Id '.$lead->id.'; Old Lead Status: '.$lead->status->status.'; New Lead Status: Customer Not Interested;',
-                ]);
-                $lead->update([
-                    'status_id' => $request->status_id,
-                ]);
-                Remark::create([
-                    'lead_id' => $lead->id,
-                    'description' => $request->remarks,
-                    'user_id'   => Auth::user()->id,
-                ]);
-                \Userlog::store($log);
-                break;
-            
-            default:
-                $request->validate([
-                    'customer_name' => 'required|string|max:191',
-                    'customer_number' => 'required|string|max:191',
-                    'file1' => 'nullable|image',
-                    'file2' => 'nullable|image',
-                    'doctor_id' => 'required|integer',
-                    'status_id' => 'required|integer',
-                ]);
-                $image1 = $lead->file1;
-                if($request->has('file1')){
-                    $file = $request->file('file1');
-                    $image1 = time().$file->getClientOriginalName();
-                    $file->move(public_path() . '/images/prescription/', $image);
-                }
-
-                $image2 = $lead->file2;
-                if($request->has('file2')){
-                    $file = $request->file('file2');
-                    $image2 = time().$file->getClientOriginalName();
-                    $file->move(public_path() . '/images/prescription/', $image);
-                }
-                $data = ([
-                    'customer_name' => $request->customer_name,
-                    'customer_number' => $request->number,
-                    'file1' => $image1,
-                    'file2' => $image2,
-                    'doctor_id' => $request->doctor,
-                ]);
-                $log = ([
-                    'user_id' => Auth::user()->id,
-                    'description' => 'Lead Updated by '.Auth::user()->name.'. Lead Id '.$lead->id.'; Old Lead Data '.var_dump($lead).' New Lead Data '.var_dump($request->all()),
-                ]);
-                \Userlog::store($log);
-                $lead->update($data);
-                break;
+        if($request->status_id === 3 && $request->remarks != null) {
+           
+            $log = ([
+               'user_id' => Auth::user()->id,
+               'description' => 'Lead Updated by '.Auth::user()->name.'. Lead Id '.$lead->id.'; Old Lead Status: '.$lead->status->status.'; New Lead Status: Customer Not Interested;',
+            ]);
+            $lead->update([
+               'status_id' => $request->status_id,
+            ]);
+            Remark::create([
+                'lead_id' => $lead->id,
+                'description' => $request->remarks,
+                'user_id'   => Auth::user()->id,
+            ]);
+            \Userlog::store($log);
         }
+        else
+        {
+            $request->validate([
+                'customer_name' => 'required|string|max:191',
+                'number' => 'required|string|max:191',
+                'file1' => 'nullable|image',
+                'file2' => 'nullable|image',
+                'doctor' => 'required|integer',
+                'status' => 'required|integer',
+            ]);
+            $image1 = $lead->file1;
+            if($request->has('file1')){
+                $file = $request->file('file1');
+                $image1 = time().$file->getClientOriginalName();
+                $file->move(public_path() . '/images/prescription/', $image);
+            }
 
+            $image2 = $lead->file2;
+            if($request->has('file2')){
+                $file = $request->file('file2');
+                $image2 = time().$file->getClientOriginalName();
+                $file->move(public_path() . '/images/prescription/', $image);
+            }
+            $data = ([
+                'customer_name' => $request->customer_name,
+                'customer_number' => $request->number,
+                'file1' => $image1,
+                'file2' => $image2,
+                'doctor_id' => $request->doctor,
+                'status_id' => $request->status,
+            ]);
+            $log = ([
+                'user_id' => Auth::user()->id,
+                'description' => 'Lead Updated by '.Auth::user()->name.'. Lead Id '.$lead->id.'; Old Lead Data '.json_encode($lead).' New Lead Data '.json_encode($request->all()),
+            ]);
+            \Userlog::store($log);
+            $lead->update($data);
+            $medicine_name = $request->medicine_name;
+            $quantity = $request->quantity;
+            $lead->products()->forceDelete();
+            foreach ($quantity as $key => $value) 
+            {
+                $lead->products()->create([
+                    'medicine_name' => $request->medicine_name[$key],
+                    'quantity' => $request->quantity[$key],
+                ]);
+            }
+        }
 
         return back()->with('status','Lead Update Successfully');
     }
