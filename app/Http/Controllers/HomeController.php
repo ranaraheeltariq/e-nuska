@@ -37,7 +37,7 @@ class HomeController extends Controller
     public function users()
     {
         $users = User::all();
-        return $users;
+        return view('users')->with('users',$users);
     }
 
     /**
@@ -64,6 +64,8 @@ class HomeController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|',
             'department_id' => 'required|numeric',
+            'mobile' => 'nullable|string|max:191',
+            'image' => 'nullable|image',
         ]);
 
         $data = ([
@@ -72,6 +74,8 @@ class HomeController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'department_id' => $request->department_id,
+            'mobile'    => $request->mobile,
+            'image' =>  $image,
         ]);
 
         $userinsert = User::create($data);
@@ -90,8 +94,8 @@ class HomeController extends Controller
          $email = array(
                     'to' => $lead->email,
                     'to-name' => $lead->name,
-                    'subject' => 'Welcome to Special Order CRM',
-                    'content' => 'Dear '.$lead->name.'<br><br> Welcome to Special Order CRM, your login detail are following<br><br> Username:  '.$lead->username.'<br>Password:  '.$request->password,
+                    'subject' => 'Welcome to E-Nuska CRM',
+                    'content' => 'Dear '.$lead->name.'<br><br> Welcome to E-Nuska CRM, your login detail are following<br><br> Username:  '.$lead->username.'<br>Password:  '.$request->password,
                 );
                 
                 Mail::send([], [], function($message) use ($email) {
@@ -107,7 +111,7 @@ class HomeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Order  $order
+     * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
     public function show()
@@ -116,15 +120,28 @@ class HomeController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(User $user)
+    {
+        return view('edit_user')->with('user',$user);
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Order  $order
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
      public function update(Request $request, User $user)
     {
-        $request->validate([
+        if($request->filled('selfuser'))
+        {
+            $request->validate([
             'password' => 'required|string|min:6|confirmed',
         ]);
 
@@ -132,18 +149,72 @@ class HomeController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        $user->update($data);
-
-        if (Auth::check()) {
-
             $log = ([
                 'user_id' => Auth::user()->id,
                 'description' => Auth::user()->name.' Change a Password',
             ]);
-
-            \Userlog::store($log);
         }
+        else
+        {
+            $request->validate([
+                'name' => 'required|string',
+                'department_id' => 'required|numeric',
+                'mobile' => 'nullable|string|max:191',
+                'image' => 'nullable|image',
+                'password' => 'nullable|string|min:6',
+            ]);
+            $image = $user->image;
+            if($request->has('image')){
+            $file = $request->file('image');
+            $image = time().$file->getClientOriginalName();
+            $file->move(public_path('images/users'), $image);
+            }
+            $password = $request->has('password') ? bcrypt($request->password) : $user->password;
+            $data = ([
+                'name' => $request->name,
+                'password' => $password,
+                'department_id' => $request->department_id,
+                'mobile'    => $request->mobile,
+                'image' =>  $image,
+            ]);
+            $email = array(
+                'to' => $user->email,
+                'to-name' => $user->name,
+                'subject' => 'Password Change to E-Nuska',
+                'content' => 'Dear '.$user->name.'<br><br> Your Password is changed by Admin, your new login detail are following<br><br> Username:  '.$user->username.'<br>Password:  '.$request->password.'<br><br> <a href="https://e-nuska.apothecare.com.pk" target="_blank">E-Nuska CRM</a>',
+                );
+                
+                Mail::send([], [], function($message) use ($email) {
+                $message->to($email['to']);
+                $message->subject($email['subject']);
+                $message->setBody($email['content'], 'text/html');
+                });
 
-        return back()->with('status','Your Password Successfully Changed');
+            $log = ([
+                'user_id' => Auth::user()->id,
+                'description' => 'User Update by'.Auth::user()->name.', User Id: '.$user->id.', Old User Detail: '.json_encode($user).'; New User Detail: '.json_encode($data),
+            ]);
+        }
+        $user->update($data);
+        \Userlog::store($log);
+
+        return back()->with('status','User Successfully Update');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(User $user)
+    {
+        $log = ([
+                    'user_id' => Auth::user()->id,
+                    'description' => 'User Deleted by '.Auth::user()->name.'. User Name '.$user->name,
+                ]);
+        \Userlog::store($log);
+        $user->delete();
+        return back()->with('status','User Successfully Deleted');
     }
 }

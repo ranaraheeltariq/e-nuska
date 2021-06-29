@@ -57,7 +57,7 @@
                             <div class="col-sm-9">
                               <select class="js-example-basic-single" name="status" id="status" style="width:100%">
                                 <option value="">Select Status..</option>
-                                @foreach(App\Models\Status::all()->take(-4) as $status)
+                                @foreach(App\Models\Status::all()->take(-5) as $status)
                                 @php $select = $status->id == $order->status_id ? 'selected=selected' : '' @endphp
                                   <option {{ $select }} value="{{ $status->id }}">{{ $status->status }}</option>
                                   @endforeach

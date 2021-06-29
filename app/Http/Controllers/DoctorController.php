@@ -16,7 +16,7 @@ class DoctorController extends Controller
     {
         $doctors = Doctor::all();
 
-        return $doctors;
+        return view('doctors')->with('doctors',$doctors);
     }
 
     /**
@@ -60,7 +60,7 @@ class DoctorController extends Controller
      */
     public function show(Doctor $doctor)
     {
-        return $doctor;
+        // return $doctor;
     }
 
     /**
@@ -71,7 +71,7 @@ class DoctorController extends Controller
      */
     public function edit(Doctor $doctor)
     {
-        return "Doctor Edit => ".$doctor;
+        return view('edit_doctor')->with('doctor',$doctor);
     }
 
     /**
@@ -84,20 +84,20 @@ class DoctorController extends Controller
     public function update(Request $request, Doctor $doctor)
     {
         $request->validate([
-            'doctor_name' => 'required|string|max:191',
-            'doctor_number' => 'required|string|max:191',
-            'doctor_clinic' => 'nullable|string',
+            'name' => 'required|string|max:191',
+            'number' => 'required|string|max:191',
+            'clinic_name' => 'nullable|string',
         ]);
 
         $data = ([
-            'doctor_name' => $request->doctor_name,
-            'doctor_number' => $request->doctor_number,
-            'doctor_clinic' => $request->doctor_clinic,
+            'doctor_name' => $request->name,
+            'doctor_number' => $request->number,
+            'doctor_clinic' => $request->clinic_name,
         ]);
 
         $doctor->update($data);
 
-        return "Doctor Update => ".$doctor;
+        return back()->with('status','Doctor Successfully Updated');
 
     }
 
@@ -111,6 +111,6 @@ class DoctorController extends Controller
     {
         $doctor->delete();
 
-        return "Doctor Successfully Deleted";
+       return back()->with('status','Doctor Successfully Deleted');
     }
 }

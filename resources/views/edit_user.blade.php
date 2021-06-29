@@ -6,16 +6,17 @@
     		<div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">Create New User</h4>
-                    <form class="form-sample" method="post" action="{{route('add user')}}">
+                    <h4 class="card-title">Edit User</h4>
+                    <form class="form-sample" method="post" action="{{route('password',$user->id)}}" enctype="multipart/form-data">
                       <p class="card-description"> Enter User Personal info </p>
                       <div class="row">
                         {{ csrf_field() }}
+                        @method('put')
                         <div class="col-md-6">
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Name</label>
                             <div class="col-sm-9">
-                              <input type="text" class="form-control{{ $errors->has('name') ? ' form-control-danger' : '' }}" name="name" required="required">
+                              <input type="text" class="form-control{{ $errors->has('name') ? ' form-control-danger' : '' }}" name="name" value="{{ $user->name }}">
                               @if ($errors->has('name'))
                               <label class="error mt-2 text-danger" for="$errors->has('name')">{{ $errors->first('name') }}</label>
                               @endif
@@ -26,7 +27,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Username</label>
                             <div class="col-sm-9">
-                              <input type="text" class="form-control{{ $errors->has('username') ? ' form-control-danger' : '' }}" name="username" required="required">
+                              <input type="text" class="form-control{{ $errors->has('username') ? ' form-control-danger' : '' }}" disabled="disabled" name="username" value="{{ $user->username }}">
                               @if ($errors->has('username'))
                               <label class="error mt-2 text-danger" for="$errors->has('username')">{{ $errors->first('username') }}</label>
                               @endif
@@ -39,7 +40,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Email</label>
                             <div class="col-sm-9">
-                              <input type="text" class="form-control{{ $errors->has('email') ? ' form-control-danger' : '' }}" name="email" required="required">
+                              <input type="text" class="form-control{{ $errors->has('email') ? ' form-control-danger' : '' }}" disabled="disabled" name="email" value="{{ $user->email }}">
                               @if ($errors->has('email'))
                               <label class="error mt-2 text-danger" for="$errors->has('email')">{{ $errors->first('email') }}</label>
                               @endif
@@ -50,7 +51,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Password</label>
                             <div class="col-sm-9">
-                              <input type="text" class="form-control{{ $errors->has('password') ? ' form-control-danger' : '' }}" name="password" required="required">
+                              <input type="password" class="form-control{{ $errors->has('password') ? ' form-control-danger' : '' }}" name="password">
                               @if ($errors->has('password'))
                               <label class="error mt-2 text-danger" for="$errors->has('password')">{{ $errors->first('password') }}</label>
                               @endif
@@ -66,7 +67,8 @@
                               <select class="form-control{{ $errors->has('department_id') ? ' form-control-danger' : '' }}" name="department_id">
                                 <option value="">Select Department..</option>
                                 @foreach(App\Models\Department::all() as $department)
-                                <option value="{{$department->id}}">{{$department->name}}</option>
+                                @php $select = $user->department_id == $department->id ? 'selected=selected' : '' @endphp
+                                <option {{ $select }} value="{{$department->id}}">{{$department->name}}</option>
                                 @endforeach
                               </select>
                                @if ($errors->has('department_id'))
@@ -79,7 +81,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Mobile Number</label>
                             <div class="col-sm-9">
-                              <input type="text" class="form-control{{ $errors->has('mobile') ? ' form-control-danger' : '' }}" name="mobile" required="required">
+                              <input type="text" class="form-control{{ $errors->has('mobile') ? ' form-control-danger' : '' }}" name="mobile" value="{{ $user->mobile }}">
                               @if ($errors->has('mobile'))
                               <label class="error mt-2 text-danger" for="$errors->has('mobile')">{{ $errors->first('mobile') }}</label>
                               @endif
@@ -116,6 +118,7 @@
 @endsection
 @section('js')
 <script src="{{ asset('assets') }}/js/file-upload.js"></script>
+<script src="{{ asset('assets') }}/vendors/sweetalert/sweetalert.min.js"></script>
 <script src="{{ asset('assets') }}/vendors/jquery-validation/jquery.validate.min.js"></script>
 @parent
 <script src="{{ asset('assets') }}/js/form-validation.js"></script>

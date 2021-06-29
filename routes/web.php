@@ -38,7 +38,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/add/doctor',[DoctorController::class,'create'])->name('doctor.add');
     Route::post('/doctor',[DoctorController::class,'store'])->name('doctor.save');
     Route::get('/doctor/{doctor:doctor_name}',[DoctorController::class,'show'])->name('doctor.profile');
-    Route::get('/doctor/{doctor}/edit',[DoctorController::class,'edit'])->name('doctor.edit');
+    // Route::get('edit/{doctor}/doctor',[DoctorController::class,'edit'])->name('doctor.edit');
     Route::put('/doctor/{doctor}',[DoctorController::class,'update'])->name('doctor.update');
     Route::delete('/doctor/{doctor}',[DoctorController::class,'destroy'])->name('doctor.remove');
     // Lead Controller Routes
@@ -48,7 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/leads/close',[LeadController::class,'customernotinterested'])->name('leads.close');
     Route::get('/add/lead',[LeadController::class,'create'])->name('lead.add');
     Route::post('/lead',[LeadController::class,'store'])->name('lead.save');
-    Route::get('/lead/{lead}',[LeadController::class,'show'])->name('lead.detail');
+    // Route::get('/lead/{lead}',[LeadController::class,'show'])->name('lead.detail');
     Route::get('lead/{lead}/createorder',[LeadController::class,'createorder'])->name('lead.createorder');
     Route::get('lead/{lead}/edit',[LeadController::class,'edit'])->name('lead.edit');
     Route::put('/lead/{lead}',[LeadController::class,'update'])->name('lead.update');
@@ -61,7 +61,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/orders/refund',[OrderController::class, 'refund'])->name('orders.refund');
     Route::get('/orders/completed',[OrderController::class, 'completed'])->name('orders.completed');
     Route::post('/order',[OrderController::class, 'store'])->name('orders.save');
-    Route::get('/order/{order}',[OrderController::class, 'show'])->name('orders.detail');
+    // Route::get('/order/{order}',[OrderController::class, 'show'])->name('orders.detail');
     Route::get('/order/{order}/edit', [OrderController::class, 'edit'])->name('orders.edit');
     Route::put('/order/{order}', [OrderController::class, 'update'])->name('orders.update');
     Route::delete('/order/{order}', [OrderController::class, 'destroy'])->name('orders.remove');
@@ -74,7 +74,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('password/{user}',[HomeController::class,'update'])->name('password');
     Route::get('/add/user',[HomeController::class,'create'])->name('user.add');
     Route::post('/add-user',[HomeController::class,'store'])->name('add user');
-
-
-
+    Route::get('/edit/{user}/user',[HomeController::class,'edit'])->name('user.edit');
+    Route::delete('/uers/{user}',[HomeController::class,'destroy'])->name('user.remove');
 });

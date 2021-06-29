@@ -251,7 +251,7 @@ class OrderController extends Controller
             ]);
             $order->update($request->all());
         }
-        else if($request->status_id === 6 && !isset($request->alledit))
+        else if(!$request->filled('alledit') && $request->status_id == 6)
         {
             $log = ([
                 'user_id' => Auth::user()->id,
@@ -259,7 +259,7 @@ class OrderController extends Controller
             ]);
             $order->update($request->all());
         }
-        else if($request->status_id === 7 && !isset($request->alledit))
+        else if(!$request->filled('alledit') && $request->status_id == 7)
         {
             $log = ([
                 'user_id' => Auth::user()->id,
@@ -267,12 +267,13 @@ class OrderController extends Controller
             ]);
             $order->update($request->all());
         }
-        else if($request->status_id === 8 && !isset($request->alledit))
+        else if(!$request->filled('alledit') && $request->status_id == 8)
         {
             $log = ([
                 'user_id' => Auth::user()->id,
                 'description' => 'Order Mark as Completed and Upload Invoice by '.Auth::user()->name.'. Order Id '.$order->id.'; Order Old Status: '.$order->status->status.'; Total Invoice Without Discount: '.$request->invoice_without_discount.'; Total Invoice With Discount: '.$request->invoice_with_discount,
             ]);
+            $image = '';
             if($request->has('invoice_file')){
                 $file = $request->file('invoice_file');
                 $image = $file->getClientOriginalName();
