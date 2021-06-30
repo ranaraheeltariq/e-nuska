@@ -33,7 +33,7 @@
     var i = 1;
      $('.remarks').html('')
       $.each(remarks, function(key1, value){
-      $('.remarks').prepend('<p class="clearfix remark"><span class="float-left"> Remarks '+ i +' </span><span>&nbsp;('+ formatDate(value.created_at)+')</span><span class="float-right text-muted">'+value.description+'</span></p>');
+      $('.remarks').prepend('<p class="clearfix remark"><span class="float-left"><a href="/profile/users/'+value.user_id+'" target="_blank"> User ID '+ value.user_id +'</a> </span><span>&nbsp;('+ formatDate(value.created_at)+')</span><span class="float-right text-muted">'+value.description+'</span></p>');
        i += 1;
       });
 
@@ -105,6 +105,18 @@
     var modal = $(this)
     modal.find('.modal-title').text('Assign Rider to Order No: ' + recipient)
     modal.find('.modal-body form').attr('action',link)
+  })
+
+  // Assign Agent Modal
+  $('#agent').on('show.bs.modal', function(event) {
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var recipient = button.data('whatever')
+    var link = button.data('link')
+    var user = button.data('user')
+    var modal = $(this)
+    modal.find('.modal-title').text('Assign Call Center Agent to Lead No: ' + recipient)
+    modal.find('.modal-body form').attr('action',link)
+    $('#user_id option[value="'+user+'"]').attr("selected", "selected");
   })
 
   // Upload Invoice Modal

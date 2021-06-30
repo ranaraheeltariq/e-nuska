@@ -16,6 +16,14 @@ class Lead extends Model
     /**
      * Get the doctor that belong to lead.
      */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the doctor that belong to lead.
+     */
     public function doctor()
     {
         return $this->belongsTo(Doctor::class);
@@ -64,5 +72,5 @@ class Lead extends Model
      *
      * @var array
      */
-    protected $fillable = ['customer_name', 'customer_number', 'file1', 'file2', 'doctor_id', 'status_id'];
+    protected $fillable = ['customer_name', 'customer_number', 'file1', 'file2', 'doctor_id', 'status_id','user_id'];
 }

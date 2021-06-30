@@ -60,10 +60,10 @@ class OrderController extends Controller
         }
         if(Auth::user()->department->name === 'Riders')
         {
-            $orders = Order::where(['status_id'=> 5,'user_id' => Auth::user()->id])->get();
+            $orders = Order::where(['status_id'=> 5,'user_id' => Auth::user()->id,'invoice_with_discount'=> Null,'invoice_without_discount'=> Null])->get();
             return view('order/shipped')->with('orders',$orders);
         }
-        $orders = Order::where('status_id',5)->get();
+        $orders = Order::where(['status_id'=>5,'invoice_with_discount'=> Null,'invoice_without_discount'=> Null])->get();
         return view('order/shipped')->with('orders',$orders);
     }
 
@@ -103,6 +103,20 @@ class OrderController extends Controller
         }
         $orders = Order::where('status_id',7)->get();
         return view('order/refund')->with('orders',$orders);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function approval()
+    {
+        if(Auth::user()->approval_auth == 'No' || Auth::user()->approval_auth == null){
+            return redirect('/')->with('Message','You Are Not Allowed There');
+        }
+        $orders = Order::where(['status_id'=> '5','approved'=>'No'])->whereNotNull('invoice_without_discount')->get();
+        return view('order/aproval')->with('orders',$orders);
     }
 
     /**
@@ -267,11 +281,11 @@ class OrderController extends Controller
             ]);
             $order->update($request->all());
         }
-        else if(!$request->filled('alledit') && $request->status_id == 8)
+        else if(!$request->filled('alledit') && !$request->filled('approved') && $order->status_id == 5)
         {
             $log = ([
                 'user_id' => Auth::user()->id,
-                'description' => 'Order Mark as Completed and Upload Invoice by '.Auth::user()->name.'. Order Id '.$order->id.'; Order Old Status: '.$order->status->status.'; Total Invoice Without Discount: '.$request->invoice_without_discount.'; Total Invoice With Discount: '.$request->invoice_with_discount,
+                'description' => 'Invoice Upload by '.Auth::user()->name.'. Order Id '.$order->id.'; Order Old Status: '.$order->status->status.'; Total Invoice Without Discount: '.$request->invoice_without_discount.'; Total Invoice With Discount: '.$request->invoice_with_discount,
             ]);
             $image = '';
             if($request->has('invoice_file')){
@@ -283,10 +297,17 @@ class OrderController extends Controller
                 'invoice_with_discount' => $request->invoice_with_discount,
                 'invoice_without_discount' => $request->invoice_without_discount,
                 'invoice_file' => $image,
-                'status_id' => $request->status_id,
             ]);
             $order->update($data);
         } 
+        else if(!$request->filled('alledit') && $request->status_id == 8 && $request->approved == 'Yes')
+        {
+            $log = ([
+                'user_id' => Auth::user()->id,
+                'description' => 'Order Mark as Completed and approved by '.Auth::user()->name.'. Order Id '.$order->id.'; Old Status: '.$order->status->status,
+            ]);
+            $order->update($request->all());
+        }
         else
         {
             $request->validate([

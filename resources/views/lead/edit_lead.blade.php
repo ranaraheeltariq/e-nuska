@@ -74,6 +74,25 @@
                       </div>
                       <div class="row">
                         <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Call Center Agent</label>
+                            <div class="col-sm-9">
+                              <select class="js-example-basic-single" name="call_center_agent" id="call_center_agent" style="width:100%">
+                                <option value="">Select Call Center Agent...</option>
+                                @foreach(App\Models\User::where('department_id',5)->get() as $user)
+                                @php $select = $user->id == $lead->user_id ? 'selected=selected' : '' @endphp
+                                  <option {{ $select }} value="{{ $user->id }}">{{ $user->name }}</option>
+                                  @endforeach
+                                </select>
+                                @if($errors->has('call_center_agent'))
+                                     <label class="error mt-2 text-danger" for="$errors->has('call_center_agent')">{{ $errors->first('call_center_agent') }}</label>
+                                  @endif
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
                             <div class="form-group row" id="file1_error">
                               <label class="col-sm-3 col-form-label">Prescription</label>
                                <input type="file" name="file1" id="file1" class="file-upload-default">

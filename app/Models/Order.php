@@ -72,5 +72,5 @@ class Order extends Model
      *
      * @var array
      */
-    protected $fillable = ['customer_name', 'customer_number', 'customer_address', 'lead_id', 'doctor_id', 'user_id', 'status_id', 'invoice_with_discount', 'invoice_without_discount', 'invoice_file',];
+    protected $fillable = ['customer_name', 'customer_number', 'customer_address', 'lead_id', 'doctor_id', 'user_id', 'status_id', 'invoice_with_discount', 'invoice_without_discount', 'invoice_file','approved',];
 }

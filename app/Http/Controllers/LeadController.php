@@ -103,6 +103,7 @@ class LeadController extends Controller
             'file1' => 'nullable|image',
             'file2' => 'nullable|image',
             'doctor' => 'required|integer',
+            'call_center_agent' => 'required|integer',
             'medicine_name' => 'required|array|min:1',
             'medicine_name.*' => 'required|string|max:191',
             'quantity' => 'required|array|min:1',
@@ -132,6 +133,7 @@ class LeadController extends Controller
             'file1' => $image1,
             'file2' => $image2,
             'doctor_id' => $request->doctor,
+            'user_id'   => $request->call_center_agent,
         ]);
 
         if($lead){
@@ -227,6 +229,16 @@ class LeadController extends Controller
             ]);
             \Userlog::store($log);
         }
+        elseif ($lead->status_id == 2 && $request->has('user_id')) {
+            $log = ([
+               'user_id' => Auth::user()->id,
+               'description' => 'Call Center Agent Updated by '.Auth::user()->name.'. Lead Id '.$lead->id.'; Old Call Center Agent: '.$lead->user->name.'; New Call Center Agent ID: '.$request->user_id,
+            ]);
+            $lead->update([
+               'user_id' => $request->user_id,
+            ]);
+            \Userlog::store($log);
+        }
         else
         {
             $request->validate([
@@ -236,6 +248,7 @@ class LeadController extends Controller
                 'file2' => 'nullable|image',
                 'doctor' => 'required|integer',
                 'status' => 'required|integer',
+                'call_center_agent' => 'required|integer',
             ]);
             $image1 = $lead->file1;
             if($request->has('file1')){
@@ -257,6 +270,7 @@ class LeadController extends Controller
                 'file2' => $image2,
                 'doctor_id' => $request->doctor,
                 'status_id' => $request->status,
+                'user_id'   => $request->call_center_agent,
             ]);
             $log = ([
                 'user_id' => Auth::user()->id,

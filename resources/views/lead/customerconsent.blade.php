@@ -22,7 +22,7 @@
                       <th>Customer Detail</th>
                       <th>Products Detail</th>
                       <th>Doctor Detail</th>
-                      <th>Status</th>
+                      <th>Agent Assigned</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -33,7 +33,7 @@
                       <td>{{ $lead->customer_name }}<br><br>{{ $lead->customer_number }}</td>
                       <td style="white-space: normal;line-height: normal;">@foreach($lead->products as $product) <b>Medi:</b> {{$product->medicine_name}} <b>/ Qty:</b>  {{$product->quantity}}<br>@endforeach</td>
                       <td>{{ $lead->doctor->doctor_name }}<br><br>{{ $lead->doctor->doctor_number }}</td>
-                      <td><label class="badge badge-danger">{{ $lead->status->status }}</label></td>
+                      <td>{{ $lead->user->name }}</td>
                       <td class="text-right">
                          @if(in_array(Auth::user()->department->name, array('Pharmacy','Admin','Call Center') ))
                           <a href="{{ route('lead.createorder',$lead->id) }}" class="btn btn-primary"><i class="mdi mdi-check text-success"></i>Create Order </a>
@@ -41,9 +41,10 @@
                         <button class="btn btn-danger notavailable" data-toggle="modal" data-target="#remarks" data-whatever="{{$lead->id}}" data-link="{{ route('remarks.save') }}"><i class="mdi mdi-pencil text-primary"></i> Remarks </button>
                         <br><br>
                         <button class="btn btn-info notavailable" data-toggle="modal" data-target="#notinterested" data-whatever="{{$lead->id}}" data-link="{{ route('lead.update',$lead->id) }}"><i class="mdi mdi-close text-danger"></i> Not Interested </button>
+                        <button class="btn btn-warning agent" data-toggle="modal" data-target="#agent" data-whatever="{{$lead->id}}" data-user="{{ $lead->user_id }}" data-link="{{ route('lead.update',$lead->id) }}"><i class="mdi mdi-phone text-primary"></i> Assign Agent </button>
                         @endif
                         @if(in_array(Auth::user()->department->name, array('Pharmacy','Admin') ))
-                        
+                        <br><br>
                         <a href="{{ route('lead.edit',$lead->id) }}" class="btn btn-primary"><i class="mdi mdi-check text-success"></i>Edit Lead </a>
                         @endif
                       </td>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Doctor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DoctorController extends Controller
 {
@@ -14,6 +15,10 @@ class DoctorController extends Controller
      */
     public function index()
     {
+        if(!in_array(Auth::user()->department->name, array('Pharmacy','Admin') ))
+        {
+            return redirect('/')->with('Message','You Are Not Allowed There');
+        }
         $doctors = Doctor::all();
 
         return view('doctors')->with('doctors',$doctors);
@@ -26,6 +31,10 @@ class DoctorController extends Controller
      */
     public function create()
     {
+        if(!in_array(Auth::user()->department->name, array('Pharmacy','Admin') ))
+        {
+            return redirect('/')->with('Message','You Are Not Allowed There');
+        }
         return view('create_doctor');
     }
 
@@ -37,6 +46,10 @@ class DoctorController extends Controller
      */
     public function store(Request $request)
     {
+        if(!in_array(Auth::user()->department->name, array('Pharmacy','Admin') ))
+        {
+            return redirect('/')->with('Message','You Are Not Allowed There');
+        }
         $request->validate([
             'name' => 'required|string|max:191',
             'number' => 'required|string|max:191',
@@ -48,6 +61,11 @@ class DoctorController extends Controller
             'doctor_number' => $request->number,
             'doctor_clinic' => $request->clinic_name,
         ]);
+        $log = ([
+                'user_id' => Auth::user()->id,
+                'description' => 'New Doctor Added by'.Auth::user()->name.', Doctor Name: '.$doctor->doctor_name,
+        ]);
+        \Userlog::store($log);
 
         return back()->with('status','Doctor Successfully Added');
     }
@@ -71,6 +89,10 @@ class DoctorController extends Controller
      */
     public function edit(Doctor $doctor)
     {
+        if(!in_array(Auth::user()->department->name, array('Pharmacy','Admin') ))
+        {
+            return redirect('/')->with('Message','You Are Not Allowed There');
+        }
         return view('edit_doctor')->with('doctor',$doctor);
     }
 
@@ -83,6 +105,10 @@ class DoctorController extends Controller
      */
     public function update(Request $request, Doctor $doctor)
     {
+        if(!in_array(Auth::user()->department->name, array('Pharmacy','Admin') ))
+        {
+            return redirect('/')->with('Message','You Are Not Allowed There');
+        }
         $request->validate([
             'name' => 'required|string|max:191',
             'number' => 'required|string|max:191',
@@ -94,7 +120,11 @@ class DoctorController extends Controller
             'doctor_number' => $request->number,
             'doctor_clinic' => $request->clinic_name,
         ]);
-
+        $log = ([
+                'user_id' => Auth::user()->id,
+                'description' => 'Doctor Updated by'.Auth::user()->name.', Doctor id: '.$doctor->id.'; Old Doctor Value: '.json_encode($doctor).'; New Doctor Value: '.json_encode($data),
+        ]);
+        \Userlog::store($log);
         $doctor->update($data);
 
         return back()->with('status','Doctor Successfully Updated');
@@ -109,6 +139,15 @@ class DoctorController extends Controller
      */
     public function destroy(Doctor $doctor)
     {
+        if(!in_array(Auth::user()->department->name, array('Pharmacy','Admin') ))
+        {
+            return redirect('/')->with('Message','You Are Not Allowed There');
+        }
+        $log = ([
+                'user_id' => Auth::user()->id,
+                'description' => 'Doctor Deleted by'.Auth::user()->name.', Doctor name: '.$doctor->doctor_name,
+        ]);
+        \Userlog::store($log);
         $doctor->delete();
 
        return back()->with('status','Doctor Successfully Deleted');

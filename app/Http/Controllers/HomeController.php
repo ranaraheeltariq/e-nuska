@@ -36,6 +36,9 @@ class HomeController extends Controller
      */
     public function users()
     {
+        if(!in_array(Auth::user()->department->name, array('Admin') )){
+            return redirect('/')->with('Message','You Are Not Allowed There');
+        }
         $users = User::all();
         return view('users')->with('users',$users);
     }
@@ -47,6 +50,9 @@ class HomeController extends Controller
      */
     public function create()
     {
+        if(!in_array(Auth::user()->department->name, array('Admin') )){
+            return redirect('/')->with('Message','You Are Not Allowed There');
+        }
         return view('create_user');
     }
 
@@ -58,6 +64,9 @@ class HomeController extends Controller
      */
     public function store(Request $request)
     {
+        if(!in_array(Auth::user()->department->name, array('Admin') )){
+            return redirect('/')->with('Message','You Are Not Allowed There');
+        }
          $request->validate([
             'name' => 'required|string',
             'username'   =>  'required|string',
@@ -68,6 +77,13 @@ class HomeController extends Controller
             'image' => 'nullable|image',
         ]);
 
+         // dd($request->all());
+        $image = null;
+        if($request->has('image')){
+        $file = $request->file('image');
+        $image = time().$file->getClientOriginalName();
+        $file->move(public_path('images/users'), $image);
+        }
         $data = ([
             'name' => $request->name,
             'username' => $request->username,
@@ -76,6 +92,7 @@ class HomeController extends Controller
             'department_id' => $request->department_id,
             'mobile'    => $request->mobile,
             'image' =>  $image,
+            'approval_auth' => $request->approval_auth,
         ]);
 
         $userinsert = User::create($data);
@@ -96,13 +113,13 @@ class HomeController extends Controller
                     'to-name' => $lead->name,
                     'subject' => 'Welcome to E-Nuska CRM',
                     'content' => 'Dear '.$lead->name.'<br><br> Welcome to E-Nuska CRM, your login detail are following<br><br> Username:  '.$lead->username.'<br>Password:  '.$request->password,
-                );
+        );
                 
-                Mail::send([], [], function($message) use ($email) {
-                $message->to($email['to']);
-                $message->subject($email['subject']);
-                $message->setBody($email['content'], 'text/html');
-                });
+        Mail::send([], [], function($message) use ($email) {
+            $message->to($email['to']);
+            $message->subject($email['subject']);
+            $message->setBody($email['content'], 'text/html');
+        });
 
         return back()->with('status','New User Successfully Register');
     }
@@ -114,9 +131,12 @@ class HomeController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show()
+    public function show(User $user)
     {
-        return view('profile');
+        if($user->id == null)
+            return view('myprofile');
+        else
+            return view('profile')->with('user',$user);
     }
 
     /**
@@ -127,6 +147,9 @@ class HomeController extends Controller
      */
     public function edit(User $user)
     {
+        if(!in_array(Auth::user()->department->name, array('Admin') )){
+            return redirect('/')->with('Message','You Are Not Allowed There');
+        }
         return view('edit_user')->with('user',$user);
     }
 
@@ -156,6 +179,9 @@ class HomeController extends Controller
         }
         else
         {
+            if(!in_array(Auth::user()->department->name, array('Admin') )){
+                return redirect('/')->with('Message','You Are Not Allowed There');
+            }
             $request->validate([
                 'name' => 'required|string',
                 'department_id' => 'required|numeric',
@@ -176,19 +202,22 @@ class HomeController extends Controller
                 'department_id' => $request->department_id,
                 'mobile'    => $request->mobile,
                 'image' =>  $image,
+                'approval_auth' => $request->approval_auth,
             ]);
-            $email = array(
-                'to' => $user->email,
-                'to-name' => $user->name,
-                'subject' => 'Password Change to E-Nuska',
-                'content' => 'Dear '.$user->name.'<br><br> Your Password is changed by Admin, your new login detail are following<br><br> Username:  '.$user->username.'<br>Password:  '.$request->password.'<br><br> <a href="https://e-nuska.apothecare.com.pk" target="_blank">E-Nuska CRM</a>',
-                );
-                
-                Mail::send([], [], function($message) use ($email) {
-                $message->to($email['to']);
-                $message->subject($email['subject']);
-                $message->setBody($email['content'], 'text/html');
-                });
+            if($request->has('password')){
+                $email = array(
+                    'to' => $user->email,
+                    'to-name' => $user->name,
+                    'subject' => 'Password Change to E-Nuska',
+                    'content' => 'Dear '.$user->name.'<br><br> Your Password is changed by Admin, your new login detail are following<br><br> Username:  '.$user->username.'<br>Password:  '.$request->password.'<br><br> <a href="https://e-nuska.apothecare.com.pk" target="_blank">E-Nuska CRM</a>',
+                    );
+                    
+                    Mail::send([], [], function($message) use ($email) {
+                    $message->to($email['to']);
+                    $message->subject($email['subject']);
+                    $message->setBody($email['content'], 'text/html');
+                    });
+            }
 
             $log = ([
                 'user_id' => Auth::user()->id,
@@ -209,6 +238,9 @@ class HomeController extends Controller
      */
     public function destroy(User $user)
     {
+        if(!in_array(Auth::user()->department->name, array('Admin') )){
+            return redirect('/')->with('Message','You Are Not Allowed There');
+        }
         $log = ([
                     'user_id' => Auth::user()->id,
                     'description' => 'User Deleted by '.Auth::user()->name.'. User Name '.$user->name,

@@ -31,6 +31,14 @@ class User extends Authenticatable
     /**
      * Get the orders that have the user.
      */
+    public function leads()
+    {
+        return $this->hasMany(Lead::class);
+    }
+
+    /**
+     * Get the orders that have the user.
+     */
     public function orders()
     {
         return $this->hasMany(Order::class);
@@ -66,6 +74,7 @@ class User extends Authenticatable
         'email',
         'mobile',
         'image',
+        'approval_auth',
         'password',
         'department_id',
     ];

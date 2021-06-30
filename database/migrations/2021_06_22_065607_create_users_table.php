@@ -20,6 +20,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('mobile')->nullable();
             $table->string('image')->nullable();
+            $table->enum('approval_auth',['Yes','No'])->default('No')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->unsignedBigInteger('department_id');

@@ -56,6 +56,9 @@
                 <li class="nav-item"> <a class="nav-link" href="{{ route('orders') }}">All Orders</a></li>
                 <li class="nav-item"> <a class="nav-link" href="{{ route('orders.beingprocess') }}">Being Process</a></li>
                 <li class="nav-item"> <a class="nav-link" href="{{ route('orders.shipped') }}">Shipped, Invoice Pending</a></li>
+                @if(Auth::user()->approval_auth == 'Yes')
+                <li class="nav-item"> <a class="nav-link" href="{{ route('orders.approval') }}">Approval Pending</a></li>
+                @endif
                 <li class="nav-item"> <a class="nav-link" href="{{ route('orders.completed') }}">Completed</a></li>
                 <li class="nav-item"> <a class="nav-link" href="{{ route('orders.cancelled') }}">Cancelled</a></li>
                 <li class="nav-item"> <a class="nav-link" href="{{ route('orders.refund') }}">Refund</a></li>

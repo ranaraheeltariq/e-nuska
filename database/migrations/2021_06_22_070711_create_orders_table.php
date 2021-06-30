@@ -29,6 +29,7 @@ class CreateOrdersTable extends Migration
             $table->string('invoice_with_discount')->nullable();
             $table->string('invoice_without_discount')->nullable();
             $table->string('invoice_file')->nullable();
+            $table->enum('approved',['Yes','No'])->default('No')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

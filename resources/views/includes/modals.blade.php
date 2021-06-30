@@ -97,6 +97,7 @@
                                           <span class="float-left ml-5 text-muted" id="file1"></span>
                                           <span class="float-right mr-5 text-muted" id="file2"></span>
                                         </p>
+                                        <h3>Remarks</h3>
                                         <div class="remarks">
 
                                         </div>
@@ -245,7 +246,6 @@
                             <form id="invoiceform" action="" method="post" enctype="multipart/form-data">
                               {{ csrf_field() }}
                               {{ method_field('PUT') }}
-                              <input type="hidden" name="status_id" value="8">
                               <div class="form-group">
                                 <label for="expire" class="col-form-label">Upload Invoice:</label>
                                 <input type="file" name="invoice_file" id="invoice_file" class="file-upload-default">
@@ -274,3 +274,36 @@
                       </div>
                     </div>
                     {{-- Invoice Upload Modal End --}}
+                    {{-- Assign Rider Modal Start --}}
+              <div class="modal fade" id="agent" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="ModalLabel">Assign Call Center: </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <form id="assignrider" action="" method="post">
+                              {{ csrf_field() }}
+                              {{ method_field('PUT') }}
+                              <div class="form-group">
+                                <label for="expire" class="col-form-label">Call Center Agent:</label>
+                                <select class="js-example-basic-single" name="user_id" id="user_id" style="width:100%">
+                                <option value="">Select Call Center Agent..</option>
+                                @foreach(App\Models\User::where('department_id',5)->get() as $rider)
+                                  <option value="{{ $rider->id }}">{{ $rider->name }}</option>
+                                @endforeach
+                                </select>
+                              </div>
+                               <button type="submit" name="submit" class="btn btn-success">Submit</button>
+                               </form>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {{-- Assign Rider Modal End --}}

@@ -76,6 +76,20 @@
                             </div>
                           </div>
                         </div>
+                        <div class="col-md-6">
+                          <div class="form-group row" id="call_center_agent_error">
+                            <label class="col-sm-3 col-form-label">Call Center Agent</label>
+                            <div class="col-sm-9">
+                              <select class="js-example-basic-single" name="call_center_agent" id="call_center_agent" style="width:100%">
+                                <option value="">Select Call Center Agent..</option>
+                                @foreach(App\Models\User::where('department_id',5)->get() as $user)
+                                  <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @endforeach
+                                </select>
+                              <label class="error mt-2 text-danger" id="err_call_center_agent" style="display: none;"></label>
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
                       <p class="card-description"> Medicine </p>

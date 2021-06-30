@@ -7,7 +7,7 @@
                 <div class="card">
                   <div class="card-body">
                     <h4 class="card-title">Create New User</h4>
-                    <form class="form-sample" method="post" action="{{route('add user')}}">
+                    <form class="form-sample" method="post" action="{{route('add user')}}" enctype="multipart/form-data">
                       <p class="card-description"> Enter User Personal info </p>
                       <div class="row">
                         {{ csrf_field() }}
@@ -79,7 +79,7 @@
                           <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Mobile Number</label>
                             <div class="col-sm-9">
-                              <input type="text" class="form-control{{ $errors->has('mobile') ? ' form-control-danger' : '' }}" name="mobile" required="required">
+                              <input type="text" class="form-control{{ $errors->has('mobile') ? ' form-control-danger' : '' }}" name="mobile">
                               @if ($errors->has('mobile'))
                               <label class="error mt-2 text-danger" for="$errors->has('mobile')">{{ $errors->first('mobile') }}</label>
                               @endif
@@ -93,7 +93,7 @@
                               <label class="col-sm-3 col-form-label">Profile Image</label>
                                <input type="file" name="image" id="image" class="file-upload-default">
                             <div class="input-group col-sm-9">
-                               <input type="text" class="form-control{{ $errors->has('image') ? ' form-control-danger' : '' }} file-upload-info" disabled placeholder="Invoice file Upload">
+                               <input type="text" class="form-control{{ $errors->has('image') ? ' form-control-danger' : '' }} file-upload-info" disabled placeholder="User Profile Image Upload">
                               <span class="input-group-append">
                                 <button class="file-upload-browse btn btn-primary" type="button">Upload</button>
                              </span>
@@ -102,6 +102,23 @@
                              <label class="error mt-2 text-danger" for="$errors->has('image')">{{ $errors->first('image') }}</label>
                             @endif
                             </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Approval Authority</label>
+                            <div class="col-sm-4">
+                              <div class="form-check">
+                                <label class="form-check-label">
+                                  <input type="radio" class="form-check-input" name="approval_auth" id="membershipRadios1" value="Yes" > Yes <i class="input-helper"></i></label>
+                              </div>
+                            </div>
+                            <div class="col-sm-5">
+                              <div class="form-check">
+                                <label class="form-check-label">
+                                  <input type="radio" class="form-check-input" name="approval_auth" id="membershipRadios2" value="No"> No <i class="input-helper"></i></label>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <button type="submit" class="btn btn-primary">Submit</button>

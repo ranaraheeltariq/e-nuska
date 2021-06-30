@@ -37,8 +37,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/doctors',[DoctorController::class,'index'])->name('doctors');
     Route::get('/add/doctor',[DoctorController::class,'create'])->name('doctor.add');
     Route::post('/doctor',[DoctorController::class,'store'])->name('doctor.save');
-    Route::get('/doctor/{doctor:doctor_name}',[DoctorController::class,'show'])->name('doctor.profile');
-    // Route::get('edit/{doctor}/doctor',[DoctorController::class,'edit'])->name('doctor.edit');
+    // Route::get('/doctor/{doctor:doctor_name}',[DoctorController::class,'show'])->name('doctor.profile');
+    Route::get('edit/{doctor}/doctor',[DoctorController::class,'edit'])->name('doctor.edit');
     Route::put('/doctor/{doctor}',[DoctorController::class,'update'])->name('doctor.update');
     Route::delete('/doctor/{doctor}',[DoctorController::class,'destroy'])->name('doctor.remove');
     // Lead Controller Routes
@@ -59,6 +59,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/orders/shipped',[OrderController::class,'shipped'])->name('orders.shipped');
     Route::get('/orders/cancelled',[OrderController::class,'cancelled'])->name('orders.cancelled');
     Route::get('/orders/refund',[OrderController::class, 'refund'])->name('orders.refund');
+    Route::get('/orders/approval',[OrderController::class, 'approval'])->name('orders.approval');
     Route::get('/orders/completed',[OrderController::class, 'completed'])->name('orders.completed');
     Route::post('/order',[OrderController::class, 'store'])->name('orders.save');
     // Route::get('/order/{order}',[OrderController::class, 'show'])->name('orders.detail');
@@ -70,7 +71,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // UserLog Controller Routes
     Route::get('/logs',[UserLogController::class, 'index'])->name('userlogs');
     Route::get('/users',[HomeController::class, 'users'])->name('users');
-    Route::get('/profile',[HomeController::class, 'show'])->name('profile');
+    Route::get('/profile/users/{user?}',[HomeController::class, 'show'])->name('profile');
     Route::put('password/{user}',[HomeController::class,'update'])->name('password');
     Route::get('/add/user',[HomeController::class,'create'])->name('user.add');
     Route::post('/add-user',[HomeController::class,'store'])->name('add user');
